@@ -1,8 +1,15 @@
 const std = @import("std");
-const BuildContext = @import("build_simple.zig").BuildContext;
 
 pub fn build(b: *std.Build) void {
-    const ctx = BuildContext.standard(b);
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
 
-    _ = ctx.createLibrary("log", .dynamic);
+    const log = b.addModule("log", .{
+        .root_source_file = b.path("lib/log/root.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
+    const compile = b.addLibrary(.{ .linkage = .dynamic, .name = "log", .root_module = log });
+    b.installArtifact(compile);
 }
