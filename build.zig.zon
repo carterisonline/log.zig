@@ -1,0 +1,8 @@
+.{
+    .name = .log,
+    .version = "0.1.0",
+    .fingerprint = 0xbb87f5e198f1ef47, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.14.0",
+    .dependencies = .{},
+    .paths = .{ "build.zig", "build.zig.zon", "build_simple.zig", "src", "README.md", "LICENSE" },
+}
