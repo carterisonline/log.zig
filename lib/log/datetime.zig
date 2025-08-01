@@ -51,15 +51,10 @@ pub fn fromMillis(ms: i64) DateTime {
     };
 }
 
-pub fn format(this: DateTime, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
-    _ = fmt;
-    var buf: [30]u8 = undefined;
-
-    const slice = try std.fmt.bufPrint(&buf, "{d:0>4}-{d:0>2}-{d:0>2}T{d:0>2}:{d:0>2}:{d:0>2}.{d:0>3}Z", .{
+pub fn format(this: DateTime, writer: anytype) !void {
+    try writer.print("{d:0>4}-{d:0>2}-{d:0>2}T{d:0>2}:{d:0>2}:{d:0>2}.{d:0>3}Z", .{
         this.year,        this.month,  this.day,
         this.hour,        this.minute, this.second,
         this.millisecond,
     });
-
-    try std.fmt.formatBuf(slice, options, writer);
 }

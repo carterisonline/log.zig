@@ -1,8 +1,8 @@
 .{
     .name = .log,
-    .version = "0.1.0",
+    .version = "0.2.0",
     .fingerprint = 0x8f3f68c5ca508aa3, // Changing this has security and trust implications.
-    .minimum_zig_version = "0.14.0",
+    .minimum_zig_version = "0.15.0-dev.1283",
     .dependencies = .{},
     .paths = .{ "build.zig", "build.zig.zon", "lib", "README.md", "LICENSE" },
 }

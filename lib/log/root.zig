@@ -27,9 +27,9 @@ var global_log_level = LogLevel.Error;
 var use_style = true;
 var env_initialized = false;
 
-const stderr_file = std.io.getStdErr().writer();
-var bw = std.io.bufferedWriter(stderr_file);
-const stderr = bw.writer();
+const stderr_file = std.fs.File.stdout();
+const stderr_buf: [0x1000]u8 = undefined;
+var stderr = stderr_file.writer(@constCast(&stderr_buf));
 
 pub fn log(log_level: LogLevel, comptime fmt: []const u8, args: anytype) void {
     if (!env_initialized) {
@@ -53,7 +53,7 @@ pub fn log(log_level: LogLevel, comptime fmt: []const u8, args: anytype) void {
         }
 
         const env_nostyle = std.process.getEnvVarOwned(allocator, "LOG_NOSTYLE") catch null;
-        const is_tty = stderr_file.context.isTty() or stderr_file.context.isCygwinPty();
+        const is_tty = stderr_file.isTty() or stderr_file.isCygwinPty();
         if (env_nostyle != null or !is_tty) {
             use_style = false;
         }
@@ -64,20 +64,20 @@ pub fn log(log_level: LogLevel, comptime fmt: []const u8, args: anytype) void {
     if (@intFromEnum(global_log_level) >= @intFromEnum(log_level)) {
         const datetime = DateTime.fromMillis(std.time.milliTimestamp());
         if (use_style) {
-            stderr.print("\x1b[90m{s}\x1b[{2s};1m   [{s}]\x1b[22m\t", .{
+            stderr.interface.print("\x1b[90m{f}\x1b[{2s};1m   [{s}]\x1b[22m\t", .{
                 datetime,
                 @tagName(log_level),
                 logLevelColor(log_level),
             }) catch return;
-            stderr.print(fmt, args) catch return;
-            stderr.print("\n\x1b[0m", .{}) catch return;
-            nosuspend bw.flush() catch return;
+            stderr.interface.print(fmt, args) catch return;
+            stderr.interface.print("\n\x1b[0m", .{}) catch return;
+            nosuspend stderr.interface.flush() catch return;
         } else {
-            stderr.print("{s}   [{s}]\t", .{ datetime, @tagName(log_level) }) catch return;
-            stderr.print(fmt, args) catch return;
-            stderr.print("\n", .{}) catch return;
+            stderr.interface.print("{f}   [{s}]\t", .{ datetime, @tagName(log_level) }) catch return;
+            stderr.interface.print(fmt, args) catch return;
+            stderr.interface.print("\n", .{}) catch return;
         }
 
-        nosuspend bw.flush() catch return;
+        nosuspend stderr.interface.flush() catch return;
     }
 }

@@ -1,0 +1,7 @@
+{
+    "files.exclude": {
+        ".direnv": true,
+        ".zig-cache": true,
+        "flake.lock": true,
+    }
+}
